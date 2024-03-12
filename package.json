@@ -1,5 +1,5 @@
 {
-  "name": "api-lottery",
+  "name": "api-contest",
   "version": "1.0.0",
   "description": "Api para sistema de sorteos",
   "main": "index.js",

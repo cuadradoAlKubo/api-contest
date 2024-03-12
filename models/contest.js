@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose')
 
 
 
-const LotterySchema = Schema({
+const ContestSchema = Schema({
     name: {
         type: String,
         required: [true, 'El nombre es obligatorio']
@@ -19,7 +19,7 @@ const LotterySchema = Schema({
         type: Number,
         default: 1
     },
-    lotteryDate: {
+    contestDate: {
         type: Date,
         required: [true, 'La fecha del sorteo es obligatoria']
     },
@@ -29,9 +29,9 @@ const LotterySchema = Schema({
     }],
 })
 
-LotterySchema.methods.toJSON = function() {
-  const { __v, ...lottery } = this.toObject();
-  return lottery
+ContestSchema.methods.toJSON = function() {
+  const { __v, ...contest } = this.toObject();
+  return contest
 }
 
-module.exports =  model('Lottery', LotterySchema)
+module.exports =  model('Contest', ContestSchema)

@@ -1,7 +1,7 @@
 const {Schema, model} = require('mongoose')
 
 
-const UserByLotterySchema = Schema({
+const UserByContestSchema = Schema({
     name: {
         type: String,
         required:[true, 'El nombre es obligatorio']
@@ -11,9 +11,9 @@ const UserByLotterySchema = Schema({
         required: [true, 'El email es obligatorio'],
         unique: true
     }, 
-    lotteryId: {
+    contestId: {
         type: Schema.Types.ObjectId,
-        ref: 'Lottery',
+        ref: 'Contest',
         required: true
     },
     status: {
@@ -29,10 +29,10 @@ const UserByLotterySchema = Schema({
 
 });
 
-UserByLottery.methods.toJSON = function() {
-    const { __v, ...userByLottery } = this.toObject();
-    return userByLottery
+UserByContest.methods.toJSON = function() {
+    const { __v, ...userByContest } = this.toObject();
+    return userByContest
 }
 
 
-module.exports = model('User', UserByLotterySchema);
+module.exports = model('User', UserByContestSchema);

@@ -5,9 +5,9 @@ const RoundSchema = new Schema({
         type: Number,
         required: [true, 'El número de ronda es obligatorio']
     },
-    lotteryId: {
+    contestId: {
         type: Schema.Types.ObjectId,
-        ref: 'Lottery',
+        ref: 'Contest',
         required: [true, 'El ID del sorteo es obligatorio']
     },
     prizeId: {
@@ -17,11 +17,11 @@ const RoundSchema = new Schema({
     },
     participants: [{
         type: Schema.Types.ObjectId,
-        ref: 'UserByLottery'
+        ref: 'UserByContest'
     }],
     winners: {
         type: Schema.Types.ObjectId,
-        ref: 'UserByLottery'
+        ref: 'UserByContest'
     }
 });
 

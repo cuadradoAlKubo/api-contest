@@ -15,9 +15,9 @@ const PrizeSchema = Schema({
         type: Boolean,
         default: true
     },
-    lotteryId: {
+    contestId: {
         type: Schema.Types.ObjectId,
-        ref: 'Lottery',
+        ref: 'Contest',
         required: true
     },
     createdAt: {

@@ -1,12 +1,12 @@
 const User = require('../models/user');
-const Lottery = require('../models/lottery');
+const Contest = require('./contest');
 const Prize = require('../models/prize');
-const UserByLottery = require('../models/userByLottery');
+const UserByContest = require('./userByContest');
 const Round = require('../models/round');
 module.exports = {
   User,
-  Lottery,
+  Contest,
   Prize,
-  UserByLottery,
+  UserByContest,
   Round
 }
