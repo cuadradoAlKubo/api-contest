@@ -10,6 +10,9 @@ class Server {
         this.port = process.env.PORT
         this.paths = {
             test: '/api/v1/test',
+            auth: '/api/v1/auth',
+            prize: '/api/v1/prizes',
+            contest: '/api/v1/contests'
         }
 
 
@@ -48,6 +51,9 @@ class Server {
     }
     routes () {
       this.app.use(this.paths.test, require('../routes/test'));
+      this.app.use(this.paths.auth, require('../routes/auth'));
+      this.app.use(this.paths.prize, require('../routes/prize'));
+      this.app.use(this.paths.contest, require('../routes/contest'));
         
     }
 

@@ -23,10 +23,15 @@ const ContestSchema = Schema({
         type: Date,
         required: [true, 'La fecha del sorteo es obligatoria']
     },
-    prizes: [{
+    createdBy: {
         type: Schema.Types.ObjectId,
-        ref: 'Prize'
-    }],
+        ref: 'User',
+        required: true
+    },
+    image:{
+        type: String,
+        default: 'no-image.jpg'
+    },
 })
 
 ContestSchema.methods.toJSON = function() {

@@ -29,10 +29,10 @@ const UserByContestSchema = Schema({
 
 });
 
-UserByContest.methods.toJSON = function() {
+UserByContestSchema.methods.toJSON = function() {
     const { __v, ...userByContest } = this.toObject();
     return userByContest
 }
 
 
-module.exports = model('User', UserByContestSchema);
+module.exports = model('UserByContest', UserByContestSchema);

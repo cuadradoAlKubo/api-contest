@@ -9,7 +9,7 @@ const PrizeSchema = Schema({
     },
     description: {
         type: String,
-        required: [true, 'La descripción es obligatoria']
+        default: 'Sin descripción'
     },
     status: {
         type: Boolean,
@@ -31,7 +31,6 @@ const PrizeSchema = Schema({
     image:{
         type: String,
         default: 'no-image.jpg'
-    
     },
     winner:{
         type: Schema.Types.ObjectId,
