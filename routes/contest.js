@@ -20,4 +20,22 @@ router.post('/create', [
   validarCampos ],
   createContest)
 
+router.get('/:contestId', [
+  validarJWT,
+  isAdmin,
+  validarCampos
+],
+  getContestById)
+
+router.put('/:contestId', [
+  validarJWT,
+  isAdmin,
+  check('name', 'Name is required').notEmpty(),
+  check('rounds', 'rounds is required').notEmpty(),
+  check('contestDate', 'contestDate is required').notEmpty(),
+  validarCampos ],
+  updateContest)
+
+router.delete('/:contestId', [ validarJWT, isAdmin, validarCampos ], deleteContest)
+
 module.exports = router

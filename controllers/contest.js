@@ -35,7 +35,7 @@ const getContestById = async (req = request, res = response) =>{
   const { contestId } = req.params
   try {
     const contest = await Contest.findById(contestId)
-    return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest found')
+    return responses.success(req, res, STATUS_CODE_OK, [contest], 'Contest found')
   } catch (error) {
     console.log(error)
     return responses.error(res, SERVER_ERROR_CODE, 'Something went wrong')
