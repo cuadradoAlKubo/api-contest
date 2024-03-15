@@ -23,6 +23,7 @@ const createContest = async (req = request, res = response) =>
       customId: response._id.toString(),
       label: 'Registrarse',
       style: 1, // Estilo primario (azul)
+      url: `https://privatedevs.com/api-contest/api/v1/suscriptions/${ response._id.toString() }`
     } ];
     await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ name } el ${ contestDate }, para regitrarse haz clic en el siguiente enlace:`, buttons);
 

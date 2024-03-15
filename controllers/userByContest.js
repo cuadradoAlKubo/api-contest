@@ -1,7 +1,6 @@
 const axios = require('axios'); // Asegúrate de tener Axios instalado
 const { request, response } = require('express');
-const { Contest } = require('../models');
-const {UserByContest} = require('../models');
+const { Contest, UserByContest } = require('../models');
 const {
   STATUS_CODE_OK,
   SERVER_ERROR_CODE,
@@ -9,52 +8,47 @@ const {
 const responses = require("../responses/response");
 const { getClient, sendMessageWithButtons } = require('../discord/discordConfig');
 const eventBus = require('../helpers/eventBus');
+const { addUserToEvent } = require('../helpers/addUserToEvent')
 
-const suscriptToContest = async (req = request, res = response) =>
+eventBus.on('interaction', interaction =>
 {
-  const {contestId} = req.params;
-  const {discordUser} = req.body;
-  try {
+  // Puedes manejar todas las interacciones aquí de forma centralizada
+  if (interaction.isButton()) {
+    console.log(`Botón ${ interaction.customId } presionado por ${ interaction.user.username }`);
 
-    console.log('contestId', contestId)
-    console.log('discordUser', discordUser)
-    const contest = await Contest.findById(contestId);
-    console.log('contest', contest)
-    if(!contest){
-      return responses.error(req, res, STATUS_CODE_OK, 'Contest not found')
+    const res = addUserToEvent(customId, user.username)
+    if (res === 'done') {
+      interaction.reply(`${ user.username }, te has suscrito al concurso exitosamente.`);
+    } else {
+      interaction.reply(`${ user.username }, tuvimos un problema intenta mas tarde.`);
     }
-    const validateUserByContest = await UserByContest.findOne({discordUser, contestId});
-    if(validateUserByContest){
-      return responses.error(req, res, STATUS_CODE_OK, 'User already suscripted to contest')
-    }
-    let data ={discordUser, contestId}
-
-    eventBus.on('interaction', async (interaction) => {
-      // Asegúrate de filtrar las interacciones por customId si tienes múltiples tipos
-      if (interaction.customId === contestId  ) {
-
-        const user = interaction.user;    
-        const validateUserByContest = UserByContest.findOne({discordUser:user.username, contestId});
-        if(!validateUserByContest){
-           data = { discordUser:user.username, contestId };
-
-        }
-
-
-        console.log('Hola, ${user.username}! desde contest register');
-        // Aquí puedes implementar tu lógica específica, como responder a la interacción
-        // o realizar alguna acción basada en la interacción y el usuario que la inició
-        // await interaction.reply(`Hola, ${user.username}! Te has registrado con éxito.`);
-      }
-    });
-    const userByContest = new UserByContest(data);
-    const response = await userByContest.save();
-    return responses.success(req, res, STATUS_CODE_OK, response, 'User suscripted to contest')
-  } catch (error) {
-    console.log(error)
-    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong')
   }
-}
+});
+
+const suscriptToContest = async (req, res) =>
+{
+  const { contestId } = req.params;
+  const { discordUser } = req.body;
+
+  try {
+    const contest = await Contest.findById(contestId);
+    if (!contest) {
+      return responses.error(req, res, STATUS_CODE_OK, 'Contest not found');
+    }
+    const res = await addUserToEvent(contestId, discordUser)
+    // Resto de la lógica de suscripción...
+
+    if (res === 'done') {
+      return responses.success(req, res, STATUS_CODE_OK, { contestId, discordUser }, 'Suscription process initiated');
+    } else {
+      return responses.error(req, res, STATUS_CODE_OK, [], 'Error al suscribirse');
+    }
+
+  } catch (error) {
+    console.log(error);
+    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong');
+  }
+};
 
 
 module.exports = {
