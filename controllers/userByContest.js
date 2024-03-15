@@ -16,11 +16,14 @@ const suscriptToContest = async (req = request, res = response) =>
   const {discordUser} = req.body;
   try {
 
-    const contest = Contest.findById(contestId);
+    console.log('contestId', contestId)
+    console.log('discordUser', discordUser)
+    const contest = await Contest.findById(contestId);
+    console.log('contest', contest)
     if(!contest){
       return responses.error(req, res, STATUS_CODE_OK, 'Contest not found')
     }
-    const validateUserByContest = UserByContest.findOne({discordUser, contestId});
+    const validateUserByContest = await UserByContest.findOne({discordUser, contestId});
     if(validateUserByContest){
       return responses.error(req, res, STATUS_CODE_OK, 'User already suscripted to contest')
     }
@@ -44,7 +47,6 @@ const suscriptToContest = async (req = request, res = response) =>
         // await interaction.reply(`Hola, ${user.username}! Te has registrado con éxito.`);
       }
     });
-    
     const userByContest = new UserByContest(data);
     const response = await userByContest.save();
     return responses.success(req, res, STATUS_CODE_OK, response, 'User suscripted to contest')

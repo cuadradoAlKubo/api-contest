@@ -47,7 +47,7 @@ const createContest = async (req = request, res = response) =>
 const getContests = async (req = request, res = response) =>
 {
   try {
-    const contests = await Contest.find()
+    const contests = await Contest.find().populate('createdBy', 'name')
     return responses.success(req, res, STATUS_CODE_OK, contests, 'Contests found')
   } catch (error) {
     console.log(error)

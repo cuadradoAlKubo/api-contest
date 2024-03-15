@@ -5,8 +5,7 @@ const { suscriptToContest } = require('../controllers/userByContest');
 const router = Router()
 
 
-router.post('/', [
-  validarCampos ],
+router.post('/:contestId', [],
   suscriptToContest)
 
 router.get('/:contestId', [

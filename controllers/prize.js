@@ -23,7 +23,7 @@ const createPrize = async (req = request, res = response) =>
 const getPrizes = async (req = request, res = response) =>
 {
   try {
-    const prizes = await Prize.find()
+    const prizes = await Prize.find().populate('contestId', 'name')
     return responses.success(req, res, STATUS_CODE_OK, prizes, 'Prizes found')
   } catch (error) {
     console.log(error)
