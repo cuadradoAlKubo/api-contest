@@ -20,14 +20,14 @@ const initializeClient = async () => {
     eventBus.emit('interaction', interaction);
 
     if (!interaction.isButton()) return;
-
-    console.log('Botón presionado:', interaction.customId);
+    if (interaction.deferred || interaction.replied) {
+      return;
+    }
   });
 
   client.on('messageCreate', async message => {
     if (message.content === '!evento') {
       eventBus.emit('message', message);
-      console.log('Evento detectado:', message.content);
     }
   });
 
