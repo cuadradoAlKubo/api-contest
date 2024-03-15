@@ -2,17 +2,21 @@ const express = require('express');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const { dbConnection } = require('../database/config');
+const { getClient } = require('../discord/discordConfig');
 
 
-class Server {
-    constructor() {
+class Server
+{
+    constructor ()
+    {
         this.app = express()
         this.port = process.env.PORT
         this.paths = {
             test: '/api/v1/test',
             auth: '/api/v1/auth',
             prize: '/api/v1/prizes',
-            contest: '/api/v1/contests'
+            contest: '/api/v1/contests',
+            suscription: '/api/v1/suscriptions'
         }
 
 
@@ -27,11 +31,23 @@ class Server {
         this.routes()
     }
 
-    async conectarDB () {
+    async conectarDB ()
+    {
         await dbConnection();
     }
-
-    middlewares () {
+    async discortClient ()
+    {
+        try {
+            const client = await getClient();
+            this.discordClient = client; // Guardar la instancia del cliente en la propiedad de la clase
+            console.log('Cliente de Discord conectado');
+        } catch (error) {
+            console.error('Error al conectar con Discord:', error);
+            process.exit(1);
+        }
+    }
+    middlewares ()
+    {
         // CORS 
         this.app.use(cors())
 
@@ -49,17 +65,21 @@ class Server {
         }))
 
     }
-    routes () {
-      this.app.use(this.paths.test, require('../routes/test'));
-      this.app.use(this.paths.auth, require('../routes/auth'));
-      this.app.use(this.paths.prize, require('../routes/prize'));
-      this.app.use(this.paths.contest, require('../routes/contest'));
-        
+    routes ()
+    {
+        this.app.use(this.paths.test, require('../routes/test'));
+        this.app.use(this.paths.auth, require('../routes/auth'));
+        this.app.use(this.paths.prize, require('../routes/prize'));
+        this.app.use(this.paths.contest, require('../routes/contest'));
+        this.app.use(this.paths.suscription, require('../routes/userByContest'));
     }
 
-    listen () {
-        this.app.listen(this.port, () => {
-            console.log(`Servidor corriendo en ${this.port}`)
+    listen ()
+    {
+        this.discortClient()
+        this.app.listen(this.port, () =>
+        {
+            console.log(`Servidor corriendo en ${ this.port }`)
         })
     }
 }
