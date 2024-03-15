@@ -16,7 +16,8 @@ class Server
             auth: '/api/v1/auth',
             prize: '/api/v1/prizes',
             contest: '/api/v1/contests',
-            suscription: '/api/v1/suscriptions'
+            suscription: '/api/v1/suscriptions',
+            playRound: '/api/v1/playRound'
         }
 
 
@@ -72,6 +73,7 @@ class Server
         this.app.use(this.paths.prize, require('../routes/prize'));
         this.app.use(this.paths.contest, require('../routes/contest'));
         this.app.use(this.paths.suscription, require('../routes/userByContest'));
+        this.app.use(this.paths.playRound, require('../routes/playContest'));
     }
 
     listen ()
