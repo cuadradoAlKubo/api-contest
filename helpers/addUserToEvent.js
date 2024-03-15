@@ -8,7 +8,7 @@ const addUserToEvent = async (contestId, discordUser) =>
     }
     const validateUserByContest = await UserByContest.findOne({ discordUser, contestId })
     if (validateUserByContest) {
-      return 'Usuario ya registrado'
+      return 'ya registrado'
     }
 
     const data = {
@@ -16,7 +16,8 @@ const addUserToEvent = async (contestId, discordUser) =>
     }
 
     const userByContest = new UserByContest(data)
-     userByContest.save()
+    const addDiscordUser = await userByContest.save()
+    console.log(addDiscordUser)
       return 'done'
     // Resto de la lógica de suscripción..
   } catch (error) {
