@@ -2,15 +2,10 @@ const {Schema, model} = require('mongoose')
 
 
 const UserByContestSchema = Schema({
-    name: {
+    discordUser: {
         type: String,
-        required:[true, 'El nombre es obligatorio']
+        required:[true, 'El usuario de discord es obligatorio']
     },
-    email: {
-        type: String,
-        required: [true, 'El email es obligatorio'],
-        unique: true
-    }, 
     contestId: {
         type: Schema.Types.ObjectId,
         ref: 'Contest',
