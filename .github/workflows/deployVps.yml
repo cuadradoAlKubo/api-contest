@@ -39,4 +39,4 @@ jobs:
           git pull origin main
           git status
           npm install --only=prod
-          pm2 restart api-contest
+          pm2 restart api-contest --update-env

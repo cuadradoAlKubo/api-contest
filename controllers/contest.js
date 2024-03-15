@@ -1,6 +1,6 @@
 const axios = require('axios'); // Asegúrate de tener Axios instalado
 const { request, response } = require('express');
-const { Contest } = require('../models');
+const { Contest, Prize, UserByContest } = require('../models');
 const {
   STATUS_CODE_OK,
   SERVER_ERROR_CODE,
@@ -18,7 +18,7 @@ const createContest = async (req = request, res = response) =>
     const contest = new Contest(data);
     const response = await contest.save();
     // Enviar un mensaje a Discord con botones
-    const channelId = "986751464913371208"; 
+    const channelId = "986751464913371208";
     const buttons = [ {
       customId: response._id.toString(),
       label: 'Registrarse',
@@ -28,14 +28,15 @@ const createContest = async (req = request, res = response) =>
     await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ name } el ${ contestDate }, para regitrarse haz clic en el siguiente enlace:`, buttons);
 
 
-    eventBus.on('interaction', async (interaction) => {
+    eventBus.on('interaction', async (interaction) =>
+    {
       console.log('contest')
       // Asegúrate de filtrar las interacciones por customId si tienes múltiples tipos
-      if (interaction.customId === response._id.toString()  ) {
-        const user = interaction.user;    
+      if (interaction.customId === response._id.toString()) {
+        const user = interaction.user;
         // Aquí puedes implementar tu lógica específica, como responder a la interacción
         // o realizar alguna acción basada en la interacción y el usuario que la inició
-        await interaction.reply(`Hola, ${user.username}! Te has registrado con éxito.`);
+        await interaction.reply(`Hola, ${ user.username }! Te has registrado con éxito.`);
       }
     });
     return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest created')
@@ -48,6 +49,7 @@ const createContest = async (req = request, res = response) =>
 const getContests = async (req = request, res = response) =>
 {
   try {
+
     const contests = await Contest.find().populate('createdBy', 'name')
     return responses.success(req, res, STATUS_CODE_OK, contests, 'Contests found')
   } catch (error) {
@@ -60,11 +62,18 @@ const getContestById = async (req = request, res = response) =>
 {
   const { contestId } = req.params
   try {
-    const contest = await Contest.findById(contestId)
-    return responses.success(req, res, STATUS_CODE_OK, [ contest ], 'Contest found')
+    const [ contest, prizes, registeredUsers ] = await Promise.all([
+      await Contest.findById(contestId),
+      await Prize.find({ contestId }).sort({ orderToLot: 'asc' }),
+      await UserByContest.find({ contestId })
+
+    ])
+    console.log(contest)
+    const data = { contest, prizes, registeredUsers }
+    return responses.success(req, res, STATUS_CODE_OK, [ data ], 'Contest found')
   } catch (error) {
     console.log(error)
-    return responses.error(res, SERVER_ERROR_CODE, 'Something went wrong')
+    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong')
   }
 }
 
