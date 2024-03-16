@@ -1,5 +1,5 @@
 const { request, response } = require('express')
-const { Prize } = require('../models')
+const { Prize, Contest, UserByContest } = require('../models')
 const {
   STATUS_CODE_OK,
   SERVER_ERROR_CODE,
@@ -13,6 +13,18 @@ const createPrize = async (req = request, res = response) =>
   try {
     const prize = new Prize({ name, description, contestId, orderToLot })
     await prize.save()
+
+    //** Socket para actualizar la lista de premios */
+    const prizesList = await Prize.find().populate('contestId', 'name')
+
+    req.socket.emit('listPrizes', prizesList)
+    const [ contest, prizes, registeredUsers ] = await Promise.all([
+      await Contest.findById(contestId),
+      await Prize.find({ contestId }).sort({ orderToLot: 'asc' }),
+      await UserByContest.find({ contestId })
+
+    ])
+    req.socket.emit('contestUpdated', { contest, prizes, registeredUsers })
     return responses.success(req, res, STATUS_CODE_OK, prize, 'Prize created')
   } catch (error) {
     console.log(error)
@@ -68,6 +80,17 @@ const updatePrize = async (req = request, res = response) =>
     prize.contestId = contestId
     prize.orderToLot = orderToLot
     await Prize.findByIdAndUpdate(prizeId, prize, { new: true });
+    //** Socket para actualizar la lista de premios */
+    const prizesList = await Prize.find().populate('contestId', 'name')
+
+    req.socket.emit('listPrizes', prizesList)
+    const [ contest, prizes, registeredUsers ] = await Promise.all([
+      await Contest.findById(contestId),
+      await Prize.find({ contestId }).sort({ orderToLot: 'asc' }),
+      await UserByContest.find({ contestId })
+
+    ])
+    req.socket.emit('contestUpdated', { contest, prizes, registeredUsers })
     return responses.success(req, res, STATUS_CODE_OK, prize, 'Prize updated')
   }
   catch (error) {
@@ -84,7 +107,7 @@ const deletePrize = async (req = request, res = response) =>
     if (!prize) {
       return responses.error(req, res, BAD_REQUEST_STATUS_CODE, 'Prize not found')
     }
-    await Prize.findByIdAndUpdate(prizeId, {status:true}, { new: true });
+    await Prize.findByIdAndUpdate(prizeId, { status: true }, { new: true });
     return responses.success(req, res, STATUS_CODE_OK, prize, 'Prize deleted')
   }
   catch (error) {

@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const { validarCampos, validarJWT, isAdmin } = require('../middlewares');
-const { createContest, getContests, getContestById, updateContest, deleteContest } = require('../controllers/contest');
+const { createContest, getContests, getContestById, updateContest, deleteContest, promotionContest } = require('../controllers/contest');
 const router = Router()
 
 router.get('/', [
@@ -26,6 +26,13 @@ router.get('/:contestId', [
   validarCampos
 ],
   getContestById)
+
+router.get('/promotion/:contestId', [
+  validarJWT,
+  isAdmin,
+  validarCampos
+],
+  promotionContest)
 
 router.put('/:contestId', [
   validarJWT,

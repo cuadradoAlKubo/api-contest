@@ -3,14 +3,22 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const { dbConnection } = require('../database/config');
 const { getClient } = require('../discord/discordConfig');
-
+const { socketController } = require('../sockets/controller');
 
 class Server
 {
     constructor ()
     {
+
         this.app = express()
-        this.port = process.env.PORT
+        this.port = process.env.PORT;
+        this.server = require('http').createServer(this.app);
+        this.io = require('socket.io')(this.server, {
+            cors:{
+                origin:true,
+                method:['GET', 'PATCH', 'POST', 'PUT']
+            }
+        });
         this.paths = {
             test: '/api/v1/test',
             auth: '/api/v1/auth',
@@ -19,7 +27,7 @@ class Server
             suscription: '/api/v1/suscriptions',
             playRound: '/api/v1/playRound',
             uploads: '/api/v1/uploads',
-            users:'/api/v1/users',
+            users: '/api/v1/users',
         }
 
 
@@ -32,6 +40,9 @@ class Server
 
         // Rutas de mi apliacion
         this.routes()
+
+        // Sockets
+        this.sockets();
     }
 
     async conectarDB ()
@@ -51,6 +62,13 @@ class Server
     }
     middlewares ()
     {
+        //SOCKETS
+        this.app.use((req, res, next) =>
+        {
+            req.io = this.io;
+            return next();
+        });
+
         // CORS 
         this.app.use(cors())
 
@@ -78,10 +96,16 @@ class Server
         this.app.use(this.paths.users, require('../routes/user'));
     }
 
+    sockets ()
+    {
+        this.io.on('connection', (socket) => socketController(socket, this.io));
+    }
+
     listen ()
     {
         this.discortClient()
-        this.app.listen(this.port, () =>
+        // * con socket se usa this.server y sin socket this.app
+        this.server.listen(this.port, () =>
         {
             console.log(`Servidor corriendo en ${ this.port }`)
         })

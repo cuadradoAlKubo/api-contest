@@ -26,6 +26,10 @@ const createContest = async (req = request, res = response) =>
       url: `https://privatedevs.com/api-contest/api/v1/suscriptions/${ response._id.toString() }`
     } ];
     await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ name } el ${ contestDate }, para regitrarse haz clic en el siguiente enlace:`, buttons);
+
+    //* Se implementa socket para actualizar lista de sorteos
+    const getAllContest = await Contest.find();
+    req.io.emit('getContests', getAllContest);
     return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest created')
   } catch (error) {
     console.log(error)
@@ -108,7 +112,7 @@ const deleteContest = async (req = request, res = response) =>
   }
 }
 
-const publicContest = async (req = request, res = response) =>
+const promotionContest = async (req = request, res = response) =>
 {
   const { contestId } = req.params
   try {
@@ -122,7 +126,7 @@ const publicContest = async (req = request, res = response) =>
       label: 'Registrarse',
       style: 1, // Estilo primario (azul)
     } ];
-    await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ contest.name } el ${ contest.contestDate }, para regitrarse haz clic en el siguiente enlace:`, buttons);
+    await sendMessageWithButtons(channelId, `¡Recuerda que sorteo sigue disponible! ${ contest.name } el ${ contest.contestDate }, para regitrarse haz clic en el siguiente enlace:`, buttons);
     return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest published')
   } catch (error) {
     console.log(error)
@@ -135,5 +139,6 @@ module.exports = {
   getContests,
   getContestById,
   updateContest,
-  deleteContest
+  deleteContest,
+  promotionContest
 }
