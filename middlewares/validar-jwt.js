@@ -10,14 +10,12 @@ const validarJWT = async (req = request, res = response, next) => {
 
     // const token = req.header('security-token');
     const token = req.headers.authorization.split(' ')[1];
-    console.log(token);
     if (!token) {
         return responses.error(req, res, BAD_REQUEST_STATUS_CODE, null, "Acceso no autorizado");
     }
 
     try {
         const { uid } = jwt.verify(token, process.env.SECRETKEY);
-        console.log(uid);
         const user = await User.findById(uid)
         // Validamos que el usuario exista
         if (!user) {

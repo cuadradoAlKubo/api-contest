@@ -17,7 +17,8 @@ class Server
             prize: '/api/v1/prizes',
             contest: '/api/v1/contests',
             suscription: '/api/v1/suscriptions',
-            playRound: '/api/v1/playRound'
+            playRound: '/api/v1/playRound',
+            uploads: '/api/v1/uploads'
         }
 
 
@@ -74,6 +75,7 @@ class Server
         this.app.use(this.paths.contest, require('../routes/contest'));
         this.app.use(this.paths.suscription, require('../routes/userByContest'));
         this.app.use(this.paths.playRound, require('../routes/playContest'));
+        this.app.use(this.paths.uploads, require('../routes/upload'));
     }
 
     listen ()

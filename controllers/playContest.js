@@ -52,7 +52,6 @@ const playRound = async (req = request, res = response) =>
   // Obtener la ronda por ID, incluyendo participantes y premio
   const { roundId } = req.params;
   const validateRound = await Round.findById(roundId).populate('participants');
-  console.log(validateRound)
   if (!validateRound) {
     return responses.error(req, res, SERVER_ERROR_CODE, 'Ronda no encontrada');
   }
@@ -60,7 +59,6 @@ const playRound = async (req = request, res = response) =>
   // Seleccionar un ganador aleatoriamente de los participantes
   const winnerIndex = Math.floor(Math.random() * validateRound.participants.length);
   const winner = validateRound.participants[ winnerIndex ];
-  console.log(winner)
   // Opcionalmente, actualizar el premio asociado a marcar como entregado
   const prize = await Prize.findByIdAndUpdate(validateRound.prizeId, { winner: winner._id, markAsDelivery: true });
   await UserByContest.findByIdAndUpdate(winner._id, { status: 'WINNER' });

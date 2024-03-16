@@ -14,11 +14,9 @@ eventBus.on('interaction', interaction =>
 {
   // Puedes manejar todas las interacciones aquí de forma centralizada
   if (interaction.isButton()) {
-    console.log(`Botón ${ interaction.customId } presionado por ${ interaction.user.username }`);
 
     addUserToEvent(interaction.customId, interaction.user.username).then(res =>
     {
-      console.log("res", res)
       if (res === 'done') {
         interaction.reply(`${ interaction.user.username }, te has suscrito al concurso exitosamente.`);
       } else {

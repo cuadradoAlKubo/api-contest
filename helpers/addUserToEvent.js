@@ -17,7 +17,7 @@ const addUserToEvent = async (contestId, discordUser) =>
 
     const userByContest = new UserByContest(data)
     const addDiscordUser = await userByContest.save()
-    console.log(addDiscordUser)
+
       return 'done'
     // Resto de la lógica de suscripción..
   } catch (error) {
