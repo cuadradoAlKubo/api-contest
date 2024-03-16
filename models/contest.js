@@ -32,6 +32,12 @@ const ContestSchema = Schema({
         type: String,
         default: 'no-image.jpg'
     },
+    contestStatus:{
+        type: String,
+        default: 'PENDING',
+        enum: ['PENDING', 'OPEN', 'FINISHED']
+    
+    }
 })
 
 ContestSchema.methods.toJSON = function() {

@@ -17,11 +17,19 @@ eventBus.on('interaction', interaction =>
 
     addUserToEvent(interaction.customId, interaction.user.username).then(res =>
     {
-      if (res === 'done') {
-        interaction.reply(`${ interaction.user.username }, te has suscrito al concurso exitosamente.`);
-      } else {
-        interaction.reply(`${ interaction.user.username }, ${res}.`);
+      console.log("res ", res)
+      if (res === 'Contest date expired') {
+        interaction.editReply(`El sorteo aun no ha abierto.`);
       }
+      if (res === 'Contest not started') {
+        interaction.editReply(`El sorteo aun no ha abierto.`);
+      }
+      if (res === 'done') {
+        interaction.editReply(`${ interaction.user.username }, te has suscrito al concurso exitosamente.`);
+      } if (res === 'La interacción ha caducado o ya ha sido respondida.') {
+        interaction.editReply(`La interacción ha caducado o ya ha sido respondida.`);
+      }
+
     });
   }
 });

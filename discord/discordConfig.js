@@ -21,21 +21,33 @@ const initializeClient = async () =>
   {
     // Primero emitimos la interacción al eventBus antes de cualquier retorno anticipado
     eventBus.emit('interaction', interaction);
-    try {
-      // Asegúrate de reconocer la interacción lo antes posible
-      await interaction.deferReply({ ephemeral: true });
-      // Finalmente, edita la respuesta
-      await interaction.editReply('Interacción completada con éxito.');
+    await interaction.editReply('Interacción completada con éxito.');
+    // try {
+    //   // Asegúrate de reconocer la interacción lo antes posible
+    //   await interaction.deferReply({ ephemeral: true });
+    //   // Finalmente, edita la respuesta
+    //   if (error.code === 10062) {
+    //     console.log('La interacción ha caducado o ya ha sido respondida.');
+    //     interaction.editReply(`La interacción ha caducado o ya ha sido respondida..`);
+    //   }
+    //   if (error.code === 40060) {
+    //     console.log('La interacción ha caducado o ya ha sido respondida.');
+    //     interaction.editReply(`La interacción ha caducado o ya ha sido respondida..`);
+    //   }
+    //   await interaction.editReply('Interacción completada con éxito.');
 
-    } catch (error) {
-      console.error('Error handling interaction:', error);
-
-      // Si la interacción ya no es válida, posiblemente no se pueda enviar este mensaje,
-      // pero es útil para manejo de errores y registros
-      if (error.code === 10062) {
-        console.log('La interacción ha caducado o ya ha sido respondida.');
-      }
-    }
+    // } catch (error) {
+    //   // Si la interacción ya no es válida, posiblemente no se pueda enviar este mensaje,
+    //   // pero es útil para manejo de errores y registros
+    //   if (error.code === 10062) {
+    //     console.log('La interacción ha caducado o ya ha sido respondida.');
+    //     interaction.reply(`La interacción ha caducado o ya ha sido respondida..`);
+    //   }
+    //   if (error.code === 40060) {
+    //     console.log('La interacción ha caducado o ya ha sido respondida.');
+    //     interaction.reply(`La interacción ha caducado o ya ha sido respondida..`);
+    //   }
+    // }
 
   });
 

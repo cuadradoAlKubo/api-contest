@@ -6,6 +6,17 @@ const addUserToEvent = async (contestId, discordUser) =>
     if (!contest) {
       return 'Contest not found';
     }
+    if(contest.contestDate < new Date()){
+      return 'Contest date expired'
+    }
+    if(contest.contestStatus === 'FINISHED'){
+      return 'Contest closed'
+    }
+    if(contest.contestStatus === 'PENDING'){
+      return 'Contest not started'
+    }
+
+
     const validateUserByContest = await UserByContest.findOne({ discordUser, contestId })
     if (validateUserByContest) {
       return 'ya registrado'
@@ -16,7 +27,7 @@ const addUserToEvent = async (contestId, discordUser) =>
     }
 
     const userByContest = new UserByContest(data)
-    const addDiscordUser = await userByContest.save()
+    await userByContest.save()
 
       return 'done'
     // Resto de la lógica de suscripción..

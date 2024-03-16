@@ -18,7 +18,8 @@ class Server
             contest: '/api/v1/contests',
             suscription: '/api/v1/suscriptions',
             playRound: '/api/v1/playRound',
-            uploads: '/api/v1/uploads'
+            uploads: '/api/v1/uploads',
+            users:'/api/v1/users',
         }
 
 
@@ -56,8 +57,6 @@ class Server
         // Lectura y parso del body
         this.app.use(express.json())
 
-        // Directorio publico
-        this.app.use(express.static('public'))
 
         // Fileupload - Carga de arcivos
         this.app.use(fileUpload({
@@ -76,6 +75,7 @@ class Server
         this.app.use(this.paths.suscription, require('../routes/userByContest'));
         this.app.use(this.paths.playRound, require('../routes/playContest'));
         this.app.use(this.paths.uploads, require('../routes/upload'));
+        this.app.use(this.paths.users, require('../routes/user'));
     }
 
     listen ()
