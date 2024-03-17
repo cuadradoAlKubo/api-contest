@@ -30,7 +30,7 @@ eventBus.on('interaction', async (interaction) =>
     const result = await addUserToEvent(interaction.customId, interaction.user.id);
 
     // Responde o actualiza la interacción después de realizar las operaciones
-    await interaction.reply(`${ interaction.user.username }, tu acción ha sido procesada: ${ result }`);
+    await interaction.reply(`${ interaction.user.username }, has sido registrado`);
   } catch (error) {
     if (interaction.deferred && !interaction.replied) {
       await interaction.followUp('Ocurrió un error al procesar tu solicitud.');
