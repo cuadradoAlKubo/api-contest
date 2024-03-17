@@ -1,7 +1,7 @@
 const { comprobarJWT } = require('../middlewares');
 const socketController = async (socket, io) =>
 {
-    if (!socket.handshake.headers.authorization) {
+    if (!socket.handshake.headers.authorization || socket.handshake.headers.authorization === 'null') {
         const validar = await comprobarJWT(socket.handshake.headers.authorization.split(' ')[ 1 ])
         io.emit('user-connected', validar?.uid)
 
