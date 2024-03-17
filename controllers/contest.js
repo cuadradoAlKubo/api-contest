@@ -31,8 +31,8 @@ const createContest = async (req = request, res = response) =>
     } ];
     await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ name } el ${ contestDate }, para registrarse haz clic en el siguiente enlace:`, buttons);
     // //* Se implementa socket para actualizar lista de sorteos
-    const getAllContest = await Contest.find();
-    req.io.emit('getContests', getAllContest);
+    // const getAllContest = await Contest.find();
+    // req.io.emit('getContests', getAllContest);
 
     return responses.success(req, res, STATUS_CODE_OK, savedContest, 'Contest created');
   } catch (error) {
