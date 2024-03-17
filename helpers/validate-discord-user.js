@@ -35,7 +35,7 @@ async function validateDiscordUserByUsername(username) {
         });
 
         const members = response.data;
-        console.log('Miembros del servidor:', members);
+
         const user = members.find(member => 
             member.user.username === username
         );
