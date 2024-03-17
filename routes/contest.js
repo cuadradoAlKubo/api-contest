@@ -20,11 +20,7 @@ router.post('/create', [
   validarCampos ],
   createContest)
 
-router.get('/:contestId', [
-  validarJWT,
-  isAdmin,
-  validarCampos
-],
+router.get('/:contestId', [],
   getContestById)
 
 router.get('/promotion/:contestId', [
