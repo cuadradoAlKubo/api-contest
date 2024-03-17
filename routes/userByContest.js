@@ -1,19 +1,19 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const { validarCampos, validarJWT, isAdmin } = require('../middlewares');
-const { suscriptToContest } = require('../controllers/userByContest');
+const { subscribeToContest } = require('../controllers/userByContest');
 const router = Router()
 
 
 router.post('/:contestId', [],
-  suscriptToContest)
+  subscribeToContest)
 
 router.get('/:contestId', [
   validarJWT,
   isAdmin,
   validarCampos
 ],
-suscriptToContest)
+subscribeToContest)
 
 
 module.exports = router

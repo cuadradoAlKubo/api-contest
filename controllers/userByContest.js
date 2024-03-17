@@ -1,39 +1,44 @@
-const axios = require('axios'); // Asegúrate de tener Axios instalado
+const axios = require('axios');
 const { request, response } = require('express');
-const { Contest, UserByContest } = require('../models');
+const { Contest } = require('../models');
 const {
   STATUS_CODE_OK,
   SERVER_ERROR_CODE,
 } = require('../responses/responses-status');
 const responses = require("../responses/response");
-const { getClient, sendMessageWithButtons } = require('../discord/discordConfig');
+const { addUserToEvent } = require('../helpers/addUserToEvent');
+
 const eventBus = require('../helpers/eventBus');
-const { addUserToEvent } = require('../helpers/addUserToEvent')
-
-eventBus.on('interaction', interaction =>
+eventBus.on('interaction', async (interaction) =>
 {
-  // Puedes manejar todas las interacciones aquí de forma centralizada
-  if (interaction.isButton()) {
+  if (!interaction.isButton()) return;
+  const validCustomIds = await Contest.find();
+  const customIds = validCustomIds.map(contest => contest._id.toString());
+  if (!customIds.includes(interaction.customId)) {
+    console.log('El ID personalizado no es válido.');
+    await interaction.reply('El ID personalizado no es válido.');
+    return;
+  }
+  // if (interaction.deferred || interaction.replied) {
+  //   console.log('La interacción ya ha sido reconocida.');
+  //   return;
+  // }
 
-    addUserToEvent(interaction.customId, interaction.user.username).then(res =>
-    {
-      console.log("res ", res)
-      
-      if (res === 'done') {
-        interaction.reply(`${ interaction.user.username }, te has suscrito al concurso exitosamente.`);
-      } if (res === 'La interacción ha caducado o ya ha sido respondida.') {
-        interaction.reply(`La interacción ha caducado o ya ha sido respondida.`);
-      }
-      if(res === 'ya registrado'){
+  try {
+    // Reconoce la interacción inmediatamente si se espera procesamiento adicional
+    // Luego realiza las operaciones necesarias
+    const result = await addUserToEvent(interaction.customId, interaction.user.id);
 
-        interaction.reply(`${ interaction.user.username }, ya estás registrado en este concurso.`);
-      }
-
-    });
+    // Responde o actualiza la interacción después de realizar las operaciones
+    await interaction.reply(`${ interaction.user.username }, tu acción ha sido procesada: ${ result }`);
+  } catch (error) {
+    if (interaction.deferred && !interaction.replied) {
+      await interaction.followUp('Ocurrió un error al procesar tu solicitud.');
+    }
   }
 });
 
-const suscriptToContest = async (req, res) =>
+const subscribeToContest = async (req = request, res = response) =>
 {
   const { contestId } = req.params;
   const { discordUser } = req.body;
@@ -43,22 +48,19 @@ const suscriptToContest = async (req, res) =>
     if (!contest) {
       return responses.error(req, res, STATUS_CODE_OK, 'Contest not found');
     }
-    const res = await addUserToEvent(contestId, discordUser)
-    // Resto de la lógica de suscripción...
 
-    if (res === 'done') {
-      return responses.success(req, res, STATUS_CODE_OK, { contestId, discordUser }, 'Suscription process initiated');
+    const subscriptionResult = await addUserToEvent(contestId, discordUser);
+    if (subscriptionResult === 'done') {
+      return responses.success(req, res, STATUS_CODE_OK, { contestId, discordUser }, 'Subscription process initiated');
     } else {
-      return responses.error(req, res, STATUS_CODE_OK, [], 'Error al suscribirse');
+      return responses.error(req, res, SERVER_ERROR_CODE, 'Error al suscribirse');
     }
-
   } catch (error) {
     console.log(error);
     return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong');
   }
 };
 
-
 module.exports = {
-  suscriptToContest
-}
+  subscribeToContest
+};

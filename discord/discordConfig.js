@@ -17,45 +17,17 @@ const initializeClient = async () =>
 
   await client.login(process.env.DISCORD_TOKEN);
 
-  client.on('interactionCreate', async interaction =>
-  {
-    // Primero emitimos la interacción al eventBus antes de cualquier retorno anticipado
+  client.on('interactionCreate', async interaction => {  
+    // Emitir la interacción para ser manejada en otra parte
     eventBus.emit('interaction', interaction);
-    try {
-      // Asegúrate de reconocer la interacción lo antes posible
-      await interaction.deferReply({ ephemeral: true });
-      // Finalmente, edita la respuesta
-       if (error.code === 10062) {
-        console.log('La interacción ha caducado o ya ha sido respondida.');
-        interaction.reply(`La interacción ha caducado o ya ha sido respondida..`);
-      }
-      if (error.code === 40060) {
-        console.log('La interacción ha caducado o ya ha sido respondida.');
-        interaction.reply(`La interacción ha caducado o ya ha sido respondida..`);
-      }
-      await interaction.editReply('Interacción completada con éxito.');
-
-    } catch (error) {
-      // Si la interacción ya no es válida, posiblemente no se pueda enviar este mensaje,
-      // pero es útil para manejo de errores y registros
-      if (error.code === 10062) {
-        console.log('La interacción ha caducado o ya ha sido respondida.');
-        interaction.reply(`La interacción ha caducado o ya ha sido respondida..`);
-      }
-      if (error.code === 40060) {
-        console.log('La interacción ha caducado o ya ha sido respondida.');
-        interaction.reply(`La interacción ha caducado o ya ha sido respondida..`);
-      }
-    }
-
   });
-
-  client.on('messageCreate', async message =>
-  {
+  
+  client.on('messageCreate', async message => {
     if (message.content === '!evento') {
       eventBus.emit('message', message);
     }
   });
+
 
   clientInstance = client;  // Almacena la instancia del cliente para reutilización
   return client;

@@ -1,14 +1,19 @@
-
 const { request, response } = require('express');
 const { Contest, Prize, UserByContest } = require('../models');
 const {
   STATUS_CODE_OK,
   SERVER_ERROR_CODE,
+  BAD_REQUEST_STATUS_CODE, // Asegúrate de tener esta constante definida si se usa
 } = require('../responses/responses-status');
 const responses = require("../responses/response");
 const { getClient, sendMessageWithButtons } = require('../discord/discordConfig');
-const eventBus = require('../helpers/eventBus');
 
+const eventBus = require('../helpers/eventBus');
+const { addUserToEvent } = require('../helpers/addUserToEvent')
+
+
+// Considera definir el channelId globalmente si es constante
+const channelId = "986751464913371208";
 const createContest = async (req = request, res = response) =>
 {
   const userId = req.uid;
@@ -16,55 +21,53 @@ const createContest = async (req = request, res = response) =>
   try {
     const data = { name, rounds, contestDate, contestStatus, createdBy: userId };
     const contest = new Contest(data);
-    const response = await contest.save();
-    // Enviar un mensaje a Discord con botones
-    const channelId = "986751464913371208";
+    const savedContest = await contest.save();
+
     const buttons = [ {
-      customId: response._id.toString(),
+      customId: savedContest._id.toString(),
       label: 'Registrarse',
       style: 1, // Estilo primario (azul)
-      url: `https://privatedevs.com/api-contest/api/v1/suscriptions/${ response._id.toString() }`
+      url: `https://privatedevs.com/api-contest/api/v1/suscriptions/${ savedContest.toString() }`
     } ];
-    await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ name } el ${ contestDate }, para regitrarse haz clic en el siguiente enlace:`, buttons);
-
-    //* Se implementa socket para actualizar lista de sorteos
+    await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ name } el ${ contestDate }, para registrarse haz clic en el siguiente enlace:`, buttons);
+    // //* Se implementa socket para actualizar lista de sorteos
     const getAllContest = await Contest.find();
     req.io.emit('getContests', getAllContest);
-    return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest created')
+
+    return responses.success(req, res, STATUS_CODE_OK, savedContest, 'Contest created');
   } catch (error) {
-    console.log(error)
-    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong')
+    console.log(error);
+    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong');
   }
-}
+};
 
 const getContests = async (req = request, res = response) =>
 {
   try {
-    const contests = await Contest.find().populate('createdBy', 'name')
-    return responses.success(req, res, STATUS_CODE_OK, contests, 'Contests found')
+    const contests = await Contest.find().populate('createdBy', 'name');
+    return responses.success(req, res, STATUS_CODE_OK, contests, 'Contests found');
   } catch (error) {
-    console.log(error)
-    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong')
+    console.log(error);
+    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong');
   }
-}
+};
 
 const getContestById = async (req = request, res = response) =>
 {
-  const { contestId } = req.params
+  const { contestId } = req.params;
   try {
     const [ contest, prizes, registeredUsers ] = await Promise.all([
-      await Contest.findById(contestId),
-      await Prize.find({ contestId }).sort({ orderToLot: 'asc' }),
-      await UserByContest.find({ contestId })
-
-    ])
-    const data = { contest, prizes, registeredUsers }
-    return responses.success(req, res, STATUS_CODE_OK, [ data ], 'Contest found')
+      Contest.findById(contestId),
+      Prize.find({ contestId }).sort({ orderToLot: 'asc' }),
+      UserByContest.find({ contestId })
+    ]);
+    const data = { contest, prizes, registeredUsers };
+    return responses.success(req, res, STATUS_CODE_OK, data, 'Contest found');
   } catch (error) {
-    console.log(error)
-    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong')
+    console.log(error);
+    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong');
   }
-}
+};
 
 const updateContest = async (req = request, res = response) =>
 {

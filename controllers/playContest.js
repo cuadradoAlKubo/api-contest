@@ -7,8 +7,7 @@ const {
   SERVER_ERROR_CODE,
 } = require('../responses/responses-status');
 const responses = require("../responses/response");
-const { getClient, sendMessageWithButtons } = require('../discord/discordConfig');
-const eventBus = require('../helpers/eventBus');
+const { sendMessageWithButtons } = require('../discord/discordConfig');
 const channelId = "986751464913371208";
 const createRound = async (req = request, res = response) =>
 {
