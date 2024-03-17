@@ -6,6 +6,7 @@ const {
   SERVER_ERROR_CODE,
 } = require('../responses/responses-status');
 const responses = require("../responses/response");
+const { validateDiscordUser,validateDiscordUserByUsername } = require('../helpers/validate-discord-user');
 const { addUserToEvent } = require('../helpers/addUserToEvent');
 
 const eventBus = require('../helpers/eventBus');
@@ -19,17 +20,9 @@ eventBus.on('interaction', async (interaction) =>
     await interaction.reply('El ID personalizado no es válido.');
     return;
   }
-  // if (interaction.deferred || interaction.replied) {
-  //   console.log('La interacción ya ha sido reconocida.');
-  //   return;
-  // }
 
   try {
-    // Reconoce la interacción inmediatamente si se espera procesamiento adicional
-    // Luego realiza las operaciones necesarias
     const result = await addUserToEvent(interaction.customId, interaction.user.id);
-
-    // Responde o actualiza la interacción después de realizar las operaciones
     await interaction.reply(`${ interaction.user.username }, has sido registrado`);
   } catch (error) {
     if (interaction.deferred && !interaction.replied) {
@@ -44,6 +37,10 @@ const subscribeToContest = async (req = request, res = response) =>
   const { discordUser } = req.body;
 
   try {
+    const userIsValid = await validateDiscordUserByUsername(discordUser);
+    if (!userIsValid) {
+      return responses.error(req, res, STATUS_CODE_OK, 'Invalid user');
+    }
     const contest = await Contest.findById(contestId);
     if (!contest) {
       return responses.error(req, res, STATUS_CODE_OK, 'Contest not found');
