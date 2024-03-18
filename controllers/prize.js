@@ -107,8 +107,8 @@ const deletePrize = async (req = request, res = response) =>
     if (!prize) {
       return responses.error(req, res, BAD_REQUEST_STATUS_CODE, 'Prize not found')
     }
-    await Prize.findByIdAndUpdate(prizeId, { status: true }, { new: true });
-    return responses.success(req, res, STATUS_CODE_OK, prize, 'Prize deleted')
+    await Prize.findByIdAndUpdate(prizeId, { status: false }, { new: true });
+    return responses.success(req, res, STATUS_CODE_OK, [], 'Prize deleted')
   }
   catch (error) {
     console.log(error)
