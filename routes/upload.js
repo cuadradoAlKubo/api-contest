@@ -13,7 +13,7 @@ const { validarJWT, validarArchivo, validarCampos } = require('../middlewares');
 
 const router = Router()
 
-router.post('/:collection/:id', [ validarJWT, validarArchivo ], uploadFileCloudinary)
+router.post('/:collection/:id', [ validarJWT, validarArchivo,  validarCampos ], uploadFileCloudinary)
 
 router.put('/:collection/:id', [
   validarArchivo,
