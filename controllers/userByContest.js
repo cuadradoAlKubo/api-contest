@@ -40,7 +40,7 @@ const subscribeToContest = async (req = request, res = response) =>
   try {
     const userIsValid = await validateDiscordUserByUsername(discordUser);
     if (!userIsValid) {
-      return responses.error(req, res, BAD_REQUEST_STATUS_CODE, 'Invalid user');
+      return responses.error(req, res, BAD_REQUEST_STATUS_CODE,[] ,'Invalid user');
     }
     const contest = await Contest.findById(contestId);
     if (!contest) {
@@ -55,7 +55,7 @@ const subscribeToContest = async (req = request, res = response) =>
     }
   } catch (error) {
     console.log(error);
-    return responses.error(req, res, SERVER_ERROR_CODE, 'Something went wrong');
+    return responses.error(req, res, SERVER_ERROR_CODE,[], 'Something went wrong');
   }
 };
 
