@@ -107,7 +107,7 @@ const deleteContest = async (req = request, res = response) =>
       return responses.error(req, res, BAD_REQUEST_STATUS_CODE, null, 'Contest not found')
     }
     await Contest.findByIdAndUpdate(contestId, { status: false }, { new: true })
-    await sendMessageWithButtons(channelId, `El sorteo ${ constest.name } ha sido eliminado`);
+    await sendMessageWithButtons(channelId, `El sorteo ${ contest.name } ha sido eliminado`);
     return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest deleted')
   } catch (error) {
     console.log(error)
