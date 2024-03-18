@@ -11,15 +11,9 @@ const getUsers = async (req = request, res = response) => {
   const uid = req.uid;
   try {
 
-    const [total, users] = await Promise.all([
-      User.countDocuments(),
-      User.find()
-    ]);
-    const result = {
-      total,
-      users
-    }
-    return responses.success(req, res, STATUS_CODE_OK, result, "done");
+    const users = await User.find()
+
+    return responses.success(req, res, STATUS_CODE_OK, users, "done");
   } catch (error) {
     return responses.error(req, res, BAD_REQUEST_STATUS_CODE, null, "Algo salio mal intenta mas tarde");
   }
