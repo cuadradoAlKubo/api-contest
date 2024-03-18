@@ -27,7 +27,11 @@ const createContest = async (req = request, res = response) =>
       customId: savedContest._id.toString(),
       label: 'Registrarse',
       style: 1, // Estilo primario (azul)
-      url: `https://privatedevs.com/api-contest/api/v1/suscriptions/${ savedContest.toString() }`
+    }, {
+      type: 2, // Tipo 2 para botones de enlace
+      label: 'Ver evento',
+      style: 5, // Estilo 5 para botones de enlace
+      url: `${process.env.PUBLIC_URL}/sorteo/${ savedContest._id.toString() }`
     } ];
     await sendMessageWithButtons(channelId, `¡Nuevo sorteo disponible! ${ name } el ${ contestDate }, para registrarse haz clic en el siguiente enlace:`, buttons);
     // //* Se implementa socket para actualizar lista de sorteos
@@ -107,7 +111,7 @@ const deleteContest = async (req = request, res = response) =>
       return responses.error(req, res, BAD_REQUEST_STATUS_CODE, null, 'Contest not found')
     }
     await Contest.findByIdAndUpdate(contestId, { status: false }, { new: true })
-    await sendMessageWithButtons(channelId, `El sorteo ${ contest.name } ha sido eliminado`,[]);
+    await sendMessageWithButtons(channelId, `El sorteo ${ contest.name } ha sido eliminado`, []);
     return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest deleted')
   } catch (error) {
     console.log(error)
@@ -128,6 +132,11 @@ const promotionContest = async (req = request, res = response) =>
       customId: contestId,
       label: 'Registrarse',
       style: 1, // Estilo primario (azul)
+    }, {
+      type: 2, // Tipo 2 para botones de enlace
+      label: 'Ver evento',
+      style: 5, // Estilo 5 para botones de enlace
+      url: `${process.env.PUBLIC_URL}/sorteo/${ contestId }`
     } ];
     await sendMessageWithButtons(channelId, `¡Recuerda que sorteo sigue disponible! ${ contest.name } el ${ contest.contestDate }, para regitrarse haz clic en el siguiente enlace:`, buttons);
     return responses.success(req, res, STATUS_CODE_OK, contest, 'Contest published')

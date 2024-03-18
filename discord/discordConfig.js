@@ -37,14 +37,20 @@ const sendMessageWithButtons = async (channelId, messageText, buttons) =>
 {
   const client = await getClient();
 
-  const components = buttons.map(button =>
-    new ActionRowBuilder()
-      .addComponents(new ButtonBuilder()
-        .setCustomId(button.customId)
+  const components = buttons.map(button => {
+    const buttonBuilder = new ButtonBuilder()
         .setLabel(button.label)
-        .setStyle(ButtonStyle[ button.style ])
-      )
-  );
+        .setStyle(ButtonStyle[button.style]);
+
+    // Diferenciar entre botones de enlace y botones con customId
+    if (button.url) {
+        buttonBuilder.setURL(button.url);
+    } else if (button.customId) {
+        buttonBuilder.setCustomId(button.customId);
+    }
+
+    return new ActionRowBuilder().addComponents(buttonBuilder);
+});
 
   const body = {
     content: messageText,

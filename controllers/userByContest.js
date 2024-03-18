@@ -3,6 +3,7 @@ const { request, response } = require('express');
 const { Contest } = require('../models');
 const {
   STATUS_CODE_OK,
+  BAD_REQUEST_STATUS_CODE,
   SERVER_ERROR_CODE,
 } = require('../responses/responses-status');
 const responses = require("../responses/response");
@@ -39,11 +40,11 @@ const subscribeToContest = async (req = request, res = response) =>
   try {
     const userIsValid = await validateDiscordUserByUsername(discordUser);
     if (!userIsValid) {
-      return responses.error(req, res, STATUS_CODE_OK, 'Invalid user');
+      return responses.error(req, res, BAD_REQUEST_STATUS_CODE, 'Invalid user');
     }
     const contest = await Contest.findById(contestId);
     if (!contest) {
-      return responses.error(req, res, STATUS_CODE_OK, 'Contest not found');
+      return responses.error(req, res, BAD_REQUEST_STATUS_CODE, 'Contest not found');
     }
 
     const subscriptionResult = await addUserToEvent(contestId, discordUser);
