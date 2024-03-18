@@ -40,16 +40,16 @@ const subscribeToContest = async (req = request, res = response) =>
   try {
     const userIsValid = await validateDiscordUserByUsername(discordUser);
     if (!userIsValid) {
-      return responses.error(req, res, BAD_REQUEST_STATUS_CODE,[] ,'Invalid user');
+      return responses.error(req, res, BAD_REQUEST_STATUS_CODE,[] ,'No es un usuario de Discord válido');
     }
     const contest = await Contest.findById(contestId);
     if (!contest) {
-      return responses.error(req, res, BAD_REQUEST_STATUS_CODE, 'Contest not found');
+      return responses.error(req, res, BAD_REQUEST_STATUS_CODE, 'Sorteo no encontrado');
     }
 
     const subscriptionResult = await addUserToEvent(contestId, discordUser);
     if (subscriptionResult === 'done') {
-      return responses.success(req, res, STATUS_CODE_OK, { contestId, discordUser }, 'Subscription process initiated');
+      return responses.success(req, res, STATUS_CODE_OK, { contestId, discordUser }, 'Registrado correctamente');
     } else {
       return responses.error(req, res, SERVER_ERROR_CODE, 'Error al suscribirse');
     }
